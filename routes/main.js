@@ -14,7 +14,7 @@ module.exports = function(app, shopData) {
         //searching in the database
         //res.send("You searched for: " + req.query.keyword);
 
-        let sqlquery = "SELECT * FROM books WHERE name LIKE '%" + req.query.keyword + "%'"; // query database to get all the books
+        let sqlquery = "SELECT * FROM foods WHERE name LIKE '%" + req.query.keyword + "%'"; // query database to get all the books
         // execute sql query
         db.query(sqlquery, (err, result) => {
             if (err) {
@@ -30,7 +30,7 @@ module.exports = function(app, shopData) {
     });                                                                                                 
     app.post('/registered', function (req,res) {
         // saving data in database
-        res.send(' Hello '+ req.body.first + ' '+ req.body.last +' you are now registered!  We will send an email to you at ' + req.body.email);                                                                              
+        res.send(' Hello '+ req.body.first + ' '+ req.body.last +' you are now registered!  We will send an email to you at ' + req.body.email);                                                                             
     }); 
     app.get('/list', function(req, res) {
         let sqlquery = "SELECT * FROM foods"; // query database to get all the books
