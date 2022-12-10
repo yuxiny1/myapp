@@ -56,8 +56,6 @@ module.exports = function (app, shopData) {
       }
       res.render("list.ejs", newData);
     }
-    
-
     );
   });
 
@@ -300,15 +298,73 @@ module.exports = function (app, shopData) {
     });
   });
 
-  app.get("/bargainbooks", function (req, res) {
-    let sqlquery = "SELECT * FROM books WHERE price < 20";
-    db.query(sqlquery, (err, result) => {
-      if (err) {
-        res.redirect("./");
-      }
-      let newData = Object.assign({}, shopData, { availableBooks: result });
-      console.log(newData);
-      res.render("bargains.ejs", newData);
+    //Add a feature to your API to allow a parameter to add a search term. For example, this URL will search for books that contain the word ‘universe’:
+    app.get("/api", (req, res) => {
+        let sqlquery = "SELECT * FROM foods";
+        // execute sql query
+        let keyword = req.query.keyword;
+        // if keyword is not empty, add the keyword to the sql query
+        if (keyword) {
+          sqlquery += " WHERE name LIKE '%" + keyword + "%'";
+        }
+        db.query(sqlquery, (err, result) => {
+          if (err) {
+            res.redirect("./");
+          }
+          res.json(result);
+        });
+      });
+
+
+      app.get("/updatefood/:id", function (req, res) {
+        let sqlquery = "SELECT * FROM foods WHERE id = ?";
+        let id = req.params.id;
+        db.query(sqlquery
+            , id, (err, result) => {
+            if (err) {
+                res.redirect("./");
+            }
+            let newData = Object.assign({}, shopData, { availableBooks: result });
+            console.log(newData);
+            res.render("/foodupdated", newData);
+        });
     });
-  });
+
+    app.post("/foodupdated", function (req, res) {
+        // saving data in database
+        let sqlquery = "UPDATE foods SET name = ?, Typical_values_per = ?, Unit_of_the_typical_value = ?, Carbs_per = ?, Unit_of_the_carbs = ?, Fat_per = ?, Unit_of_the_fat = ?, Protein_per = ?, Unit_of_the_protein = ? WHERE id = ?"; // query database to get all the books
+    
+        // execute sql query
+        let id = req.sanitize(req.body.id);
+        let name = req.sanitize(req.body.name);
+        let Typical_values_per = req.sanitize(req.body.Typical_values_per);
+        let Unit_of_the_typical_value = req.sanitize(
+            req.body.Unit_of_the_typical_value
+        );
+        let Carbs_per = req.sanitize(req.body.Carbs_per);
+        let Unit_of_the_carbs = req.sanitize(req.body.Unit_of_the_carbs);
+        let Fat_per = req.sanitize(req.body.Fat_per);
+        let Unit_of_the_fat = req.sanitize(req.body.Unit_of_the_fat);
+        let Protein_per = req.sanitize(req.body.Protein_per);
+        let Unit_of_the_protein = req.sanitize(req.body.Unit_of_the_protein);
+        let newrecord = [
+            name,
+            Typical_values_per,
+            Unit_of_the_typical_value,
+            Carbs_per,
+            Unit_of_the_carbs,
+            Fat_per,
+            Unit_of_the_fat,
+            Protein_per,
+            Unit_of_the_protein,
+            id
+        ];
+        db.query(sqlquery, 
+            newrecord, (err, result) => {
+            if (err) {
+                return console.error(err.message);
+            }
+            res.redirect("/foods");
+        });
+    });
 };

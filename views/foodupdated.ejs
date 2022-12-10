@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Welcome to <%=shopName%></title>
+    <p>
+        <a href="/"> HOME PAGE </a>
+      </p>
+
+    <link rel="stylesheet"  type="text/css" href="main.css" />
+  </head>
+  <body>
+    <h1><%=shopName%> Shop</h1>
+    <h2>Here are the ingredients that you could put into your recipe:</h2>
+    <ul>
+      <% availableBooks.forEach(function(ingredient) { %>
+        <li>
+         <p> The name of the ingredient:  <%= ingredient.name %> </p>
+         <p> Typical value per :  <%= ingredient.Typical_values_per %><%= ingredient.Unit_of_the_typical_value %> </p>
+         <p> Carbs per :  <%= ingredient.Carbs_per %> <%= ingredient.Unit_of_the_carbs %></p>
+         <p> protein per:   <%= ingredient.Protein_per %>
+        <%= ingredient.Unit_of_the_protein %> </p>
+         <p> Fat per  :<%= ingredient.Fat_per %>
+        <%= ingredient.Unit_of_the_fat %></p>
+        </li>
+      <% }) %>
+    </ul>
+    </body>
+</html>
