@@ -1,5 +1,7 @@
 // Import the modules we need
 var express = require ('express')
+var session = require('express-session')
+var expressSanitizer = require('express-sanitizer');
 var ejs = require('ejs')
 var bodyParser= require ('body-parser')
 const mysql = require('mysql');
@@ -9,6 +11,21 @@ const app = express()
 const port = 7777
 app.use(bodyParser.urlencoded({ extended: true }))
 
+
+app.use(expressSanitizer());
+// Set up css
+app.use(express.static(__dirname + "/public"));
+// Create a session
+app.use(
+  session({
+    secret: "somerandomstuff",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      expires: 600000,
+    },
+  })
+);
 // Set up css
 app.use(express.static(__dirname + '/public'));
 
