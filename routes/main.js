@@ -239,7 +239,7 @@ module.exports = function (app, shopData) {
     });
   });
 
-  app.get("/list", redirectLogin, function (req, res) {
+  app.get("/list", function (req, res) {
     let sqlquery = "SELECT * FROM foods"; // query database to get all the books
     // execute sql query
     db.query(sqlquery, (err, result) => {
@@ -296,7 +296,7 @@ module.exports = function (app, shopData) {
         );
     });
   });
-//----------------------updatefood session-------------------------------
+  //----------------------updatefood session-------------------------------
   //Add a feature to your API to allow a parameter to add a search term. For example, this URL will search for books that contain the word ‘universe’:
   app.get("/api", (req, res) => {
     let sqlquery = "SELECT * FROM foods";
@@ -332,7 +332,7 @@ module.exports = function (app, shopData) {
     });
   });
 
-//----------------------updatefood session-------------------------------
+  //----------------------updatefood session-------------------------------
   app.post("/food-updated", function (req, res) {
     // let tijiao = req.body.submit;
     // console.log(tijiao);
@@ -363,7 +363,7 @@ module.exports = function (app, shopData) {
       Unit_of_the_protein,
       name,
     ];
-//----------------------updatefood session-------------------------------
+    //----------------------updatefood session-------------------------------
     if (req.body.submit == "Update") {
       db.query(sqlquery, newrecord, (err, result) => {
         if (err) {
@@ -384,7 +384,7 @@ module.exports = function (app, shopData) {
       });
     }
 
-//----------------------deletefood session-------------------------------
+    //----------------------deletefood session-------------------------------
     if (req.body.submit == "Delete") {
       let sqlquery = "DELETE FROM foods WHERE name = ?";
       let word = [req.body.name];
@@ -398,6 +398,67 @@ module.exports = function (app, shopData) {
     }
   });
 
+  //----------------------calculate session-------------------------------
+  //The Calculate Recipe route
+  app.get("/calculateRecipe", (req, res) => {
+    // object of name-entered_amount pairs, to store the name of chekced food with the entered amount of it
 
+    //set initial values for the variables
+    let totalcarbs = 0;
+    let totalfat = 0;
+    let totalprotein = 0;
 
+    // object of name-entered_amount pairs, to store the name of chekced food with the entered amount of it
+    let foodAmount = {};
+    // array of food names, to store the name of chekced food with the entered amount of it
+    let foodName = [];
+    // array of food amounts, to store the name of chekced food with the entered amount of it
+    let foodAmountArray = [];
+    let foodNameArray = [];
+    // get the name of the food and the amount of it from the form
+    console.log(req.query);
+    console.log(req.query.length);
+
+    for (let key in req.query) {
+      foodName.push(key);
+      foodAmount[key] = req.query[key];
+      console.log(key);
+      console.log(req.query[key]);
+    }
+
+    for (let key in foodAmount) {
+      foodAmountArray.push(foodAmount[key]);
+    }
+
+    for (let i = 0; i < foodName.length; i++) {
+      foodNameArray.push(foodName[i]);
+    }
+
+    // get the name of the food and the amount of it from the form
+    let sqlquery = "SELECT * FROM foods WHERE name IN (?)";
+    let word = [foodNameArray];
+    console.log(word);
+    db.query(sqlquery, word, (err, result) => {
+      if (err) {
+        console.log(err);
+        res.redirect("./");
+      } else {
+        console.log(result);
+        // get the name of the food and the amount of it from the form
+        for (let i = 0; i < result.length; i++) {
+          totalcarbs += result[i].Carbs_per * foodAmountArray[i];
+          totalfat += result[i].Fat_per * foodAmountArray[i];
+          totalprotein += result[i].Protein_per * foodAmountArray[i];
+        }
+
+        // get the name of the food and the amount of it from the form
+        res.render("recipeInfo.ejs", {
+          availableFoods: result,
+          totalcarbs: totalcarbs,
+          totalfat: totalfat,
+          totalprotein: totalprotein,
+        });
+      }
+    });
+  });
 };

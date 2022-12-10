@@ -8,21 +8,43 @@
 
     <link rel="stylesheet"  type="text/css" href="main.css" />
   </head>
-  <body>
-    <h1><%=shopName%> Shop</h1>
-    <h2>Here are the ingredients that you could put into your recipe:</h2>
-    <ul>
+<body>
+    <form method="GET" action="/calculateRecipe" id="calculateRecipeForm"></form>
+  <div>
+    <table>
+
+      <tr>
+        <td>ingredient name</td>
+        <td>Typical value per</td>
+        <td>Unit of the typical value</td>
+        <td>Carbs per</td>
+        <td>Unit of the carbs</td>
+        <td>Protein per</td>
+        <td>Unit of the protein</td>
+        <td>Fat per</td>
+        <td>Unit of the fat</td>
+        <td>Quantity</td>
+      </tr>
+
       <% availableBooks.forEach(function(ingredient) { %>
-        <li>
-         <p> The name of the ingredient:  <%= ingredient.name %> </p>
-         <p> Typical value per :  <%= ingredient.Typical_values_per %><%= ingredient.Unit_of_the_typical_value %> </p>
-         <p> Carbs per :  <%= ingredient.Carbs_per %> <%= ingredient.Unit_of_the_carbs %></p>
-         <p> protein per:   <%= ingredient.Protein_per %>
-        <%= ingredient.Unit_of_the_protein %> </p>
-         <p> Fat per  :<%= ingredient.Fat_per %>
-        <%= ingredient.Unit_of_the_fat %></p>
-        </li>
+        <tr>
+          <td><%= ingredient.name %></td>
+          <td><%= ingredient.Typical_values_per %></td>
+          <td><%= ingredient.Unit_of_the_typical_value %></td>
+          <td><%= ingredient.Carbs_per %></td>
+          <td><%= ingredient.Unit_of_the_carbs %></td>
+          <td><%= ingredient.Protein_per %></td>
+          <td><%= ingredient.Unit_of_the_protein %></td>
+          <td><%= ingredient.Fat_per %></td>
+          <td><%= ingredient.Unit_of_the_fat %></td>
+          <td><input type="number" name="<%= ingredient.name %>" form="calculateRecipeForm" value="0"></td>
+        </tr>
       <% }) %>
-    </ul>
-    </body>
+    </table>
+  </div>
+
+  <div>
+    <input type="submit" value="Calculate Recipe" form="calculateRecipeForm">
+  </div>
+</body>
 </html>
