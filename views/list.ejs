@@ -2,6 +2,10 @@
 <html>
   <head>
     <title>Welcome to <%=shopName%></title>
+    <p>
+        <a href="/"> HOME PAGE </a>
+      </p>
+
     <link rel="stylesheet"  type="text/css" href="main.css" />
   </head>
   <body>
@@ -11,11 +15,11 @@
       <% availableBooks.forEach(function(ingredient) { %>
         <li>
          <p> The name of the ingredient:  <%= ingredient.name %> </p>
-         <p> Typical value per 100g :  <%= ingredient.Typical_values_per %><%= ingredient.Unit_of_the_typical_value %> </p>
-         <p> Carbs per 100g :  <%= ingredient.Carbs_per %> <%= ingredient.Unit_of_the_carbs %></p>
-         <p> protein per 100 g:   <%= ingredient.Protein_per %>
+         <p> Typical value per :  <%= ingredient.Typical_values_per %><%= ingredient.Unit_of_the_typical_value %> </p>
+         <p> Carbs per :  <%= ingredient.Carbs_per %> <%= ingredient.Unit_of_the_carbs %></p>
+         <p> protein per:   <%= ingredient.Protein_per %>
         <%= ingredient.Unit_of_the_protein %> </p>
-         <p> Fat per 100g :<%= ingredient.Fat_per %>
+         <p> Fat per  :<%= ingredient.Fat_per %>
         <%= ingredient.Unit_of_the_fat %></p>
         </li>
       <% }) %>

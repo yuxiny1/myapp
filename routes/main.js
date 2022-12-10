@@ -33,15 +33,17 @@ module.exports = function (app, shopData) {
   app.get("/about", function (req, res) {
     res.render("about.ejs", shopData);
   });
+
+    //searching in the database
   app.get("/search", function (req, res) {
     res.render("search.ejs", shopData);
   });
   app.get("/search-result", function (req, res) {
     //searching in the database
     //res.send("You searched for: " + req.query.keyword);
-
+    let keyword= req.sanitize(req.query.keyword);
     let sqlquery =
-      "SELECT * FROM foods WHERE name LIKE '%" + req.query.keyword + "%'"; // query database to get all the books
+      "SELECT * FROM foods WHERE name LIKE '%" + keyword + "%'"; // query database to get all the ingredients
     // execute sql query
     db.query(sqlquery, (err, result) => {
       if (err) {
@@ -49,8 +51,14 @@ module.exports = function (app, shopData) {
       }
       let newData = Object.assign({}, shopData, { availableBooks: result });
       console.log(newData);
+      if (result.length == 0) {
+        res.send("No results found");
+      }
       res.render("list.ejs", newData);
-    });
+    }
+    
+
+    );
   });
 
   // GET route for the register page
@@ -257,17 +265,37 @@ module.exports = function (app, shopData) {
 
   app.post("/bookadded", function (req, res) {
     // saving data in database
-    let sqlquery = "INSERT INTO books (name, price) VALUES (?,?)";
+    let sqlquery = "INSERT INTO foods (name, Typical_values_per, Unit_of_the_typical_value, Carbs_per, Unit_of_the_carbs, Fat_per, Unit_of_the_fat, Protein_per, Unit_of_the_protein) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"; // query database to get all the books
+
     // execute sql query
-    let price = req.sanitize(req.body.price);
     let name = req.sanitize(req.body.name);
-    let newrecord = [name, price];
+    let Typical_values_per = req.sanitize(req.body.Typical_values_per);
+    let Unit_of_the_typical_value = req.sanitize(
+        req.body.Unit_of_the_typical_value
+    );
+    let Carbs_per = req.sanitize(req.body.Carbs_per);
+    let Unit_of_the_carbs = req.sanitize(req.body.Unit_of_the_carbs);
+    let Fat_per = req.sanitize(req.body.Fat_per);
+    let Unit_of_the_fat = req.sanitize(req.body.Unit_of_the_fat);
+    let Protein_per = req.sanitize(req.body.Protein_per);
+    let Unit_of_the_protein = req.sanitize(req.body.Unit_of_the_protein);
+    let newrecord = [
+        name,
+        Typical_values_per,
+        Unit_of_the_typical_value,
+        Carbs_per,
+        Unit_of_the_carbs,
+        Fat_per,
+        Unit_of_the_fat,
+        Protein_per,
+        Unit_of_the_protein,
+    ];
     db.query(sqlquery, newrecord, (err, result) => {
       if (err) {
         return console.error(err.message);
       } else
         res.send(
-          " This book is added to database, name: " + name + " price " + price
+          " This ingredient is added to database, name: " + name + " price " 
         );
     });
   });
