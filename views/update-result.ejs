@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Welcome </title>
+    <p>
+        <a href="/"> HOME PAGE </a>
+      </p>
+
+    <link rel="stylesheet"  type="text/css" href="main.css" />
+  </head>
+  <body>
+    <h2>Here are the ingredients that you could put into your recipe:</h2>
+    <ul>
+      <% availableBooks.forEach(function(ingredient) { %>
+        <tr>
+        <li>
+         <p> The name of the ingredient:  <%= ingredient.name %> </p>
+         <p> Typical value per :  <%= ingredient.Typical_values_per %><%= ingredient.Unit_of_the_typical_value %> </p>
+         <p> Carbs per :  <%= ingredient.Carbs_per %> <%= ingredient.Unit_of_the_carbs %></p>
+         <p> protein per:   <%= ingredient.Protein_per %>
+        <%= ingredient.Unit_of_the_protein %> </p>
+         <p> Fat per  :<%= ingredient.Fat_per %>
+        <%= ingredient.Unit_of_the_fat %></p>
+        </li>
+        <p> Pleaes input the value into the fields: </p>
+        <form method="POST" action="/food-updated">
+          Food name:
+          <input type="text" name="name" value="<%= ingredient.name %>">
+          <br>
+          Typical value per:
+          <input type="text" name="Typical_values_per" value="<%= ingredient.Typical_values_per %>">
+          <br>
+          Unit of the typical value:
+          <input type="text" name="Unit_of_the_typical_value" value="<%= ingredient.Unit_of_the_typical_value %>">
+          <br>
+          Carbs per:
+          <input type="text" name="Carbs_per" value="<%= ingredient.Carbs_per %>">
+          <br>
+          Unit of the carbs:
+          <input type="text" name="Unit_of_the_carbs" value="<%= ingredient.Unit_of_the_carbs %>">
+          <br>
+          Protein per:
+          <input type="text" name="Protein_per" value="<%= ingredient.Protein_per %>">
+          <br>
+          Unit of the protein:
+          <input type="text" name="Unit_of_the_protein" value="<%= ingredient.Unit_of_the_protein %>">
+          <br>
+          Fat per:
+          <input type="text" name="Fat_per" value="<%= ingredient.Fat_per %>">
+          <br>
+          Unit of the fat:
+          <input type="text" name="Unit_of_the_fat" value="<%= ingredient.Unit_of_the_fat %>">
+          <br>
+          <input id="submit" type="submit" name="submit" value="Update">
+          <td><input id="submit" type="submit" name="submit" value="Delete"></td>
+        </form>
+      </tr>
+
+      <p> Please input to which ingredient you want to delete</p>
+      <form method="POST" action="/deletefood" onsubmit="return confirm('Are you sure you want to delete this ingredient?');">
+        Food name:
+        <input type="text" name="name" value="">
+        <br>
+        <button>
+        <input type="submit" value="Delete">
+      </button>
+    </form>
+
+    <% }) %>
+
+  </ul>
+
+    </body>
+</html>

@@ -34,16 +34,15 @@ module.exports = function (app, shopData) {
     res.render("about.ejs", shopData);
   });
 
-    //searching in the database
+  //searching in the database
   app.get("/search", function (req, res) {
     res.render("search.ejs", shopData);
   });
   app.get("/search-result", function (req, res) {
     //searching in the database
     //res.send("You searched for: " + req.query.keyword);
-    let keyword= req.sanitize(req.query.keyword);
-    let sqlquery =
-      "SELECT * FROM foods WHERE name LIKE '%" + keyword + "%'"; // query database to get all the ingredients
+    let keyword = req.sanitize(req.query.keyword);
+    let sqlquery = "SELECT * FROM foods WHERE name LIKE '%" + keyword + "%'"; // query database to get all the ingredients
     // execute sql query
     db.query(sqlquery, (err, result) => {
       if (err) {
@@ -55,8 +54,7 @@ module.exports = function (app, shopData) {
         res.send("No results found");
       }
       res.render("list.ejs", newData);
-    }
-    );
+    });
   });
 
   // GET route for the register page
@@ -263,13 +261,14 @@ module.exports = function (app, shopData) {
 
   app.post("/bookadded", function (req, res) {
     // saving data in database
-    let sqlquery = "INSERT INTO foods (name, Typical_values_per, Unit_of_the_typical_value, Carbs_per, Unit_of_the_carbs, Fat_per, Unit_of_the_fat, Protein_per, Unit_of_the_protein) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"; // query database to get all the books
+    let sqlquery =
+      "INSERT INTO foods (name, Typical_values_per, Unit_of_the_typical_value, Carbs_per, Unit_of_the_carbs, Fat_per, Unit_of_the_fat, Protein_per, Unit_of_the_protein) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"; // query database to get all the books
 
     // execute sql query
     let name = req.sanitize(req.body.name);
     let Typical_values_per = req.sanitize(req.body.Typical_values_per);
     let Unit_of_the_typical_value = req.sanitize(
-        req.body.Unit_of_the_typical_value
+      req.body.Unit_of_the_typical_value
     );
     let Carbs_per = req.sanitize(req.body.Carbs_per);
     let Unit_of_the_carbs = req.sanitize(req.body.Unit_of_the_carbs);
@@ -278,93 +277,127 @@ module.exports = function (app, shopData) {
     let Protein_per = req.sanitize(req.body.Protein_per);
     let Unit_of_the_protein = req.sanitize(req.body.Unit_of_the_protein);
     let newrecord = [
-        name,
-        Typical_values_per,
-        Unit_of_the_typical_value,
-        Carbs_per,
-        Unit_of_the_carbs,
-        Fat_per,
-        Unit_of_the_fat,
-        Protein_per,
-        Unit_of_the_protein,
+      name,
+      Typical_values_per,
+      Unit_of_the_typical_value,
+      Carbs_per,
+      Unit_of_the_carbs,
+      Fat_per,
+      Unit_of_the_fat,
+      Protein_per,
+      Unit_of_the_protein,
     ];
     db.query(sqlquery, newrecord, (err, result) => {
       if (err) {
         return console.error(err.message);
       } else
         res.send(
-          " This ingredient is added to database, name: " + name + " price " 
+          " This ingredient is added to database, name: " + name + " price "
         );
     });
   });
-
-    //Add a feature to your API to allow a parameter to add a search term. For example, this URL will search for books that contain the word ‘universe’:
-    app.get("/api", (req, res) => {
-        let sqlquery = "SELECT * FROM foods";
-        // execute sql query
-        let keyword = req.query.keyword;
-        // if keyword is not empty, add the keyword to the sql query
-        if (keyword) {
-          sqlquery += " WHERE name LIKE '%" + keyword + "%'";
-        }
-        db.query(sqlquery, (err, result) => {
-          if (err) {
-            res.redirect("./");
-          }
-          res.json(result);
-        });
-      });
-
-
-      app.get("/updatefood/:id", function (req, res) {
-        let sqlquery = "SELECT * FROM foods WHERE id = ?";
-        let id = req.params.id;
-        db.query(sqlquery
-            , id, (err, result) => {
-            if (err) {
-                res.redirect("./");
-            }
-            let newData = Object.assign({}, shopData, { availableBooks: result });
-            console.log(newData);
-            res.render("/foodupdated", newData);
-        });
+//----------------------updatefood session-------------------------------
+  //Add a feature to your API to allow a parameter to add a search term. For example, this URL will search for books that contain the word ‘universe’:
+  app.get("/api", (req, res) => {
+    let sqlquery = "SELECT * FROM foods";
+    // execute sql query
+    let keyword = req.query.keyword;
+    // if keyword is not empty, add the keyword to the sql query
+    if (keyword) {
+      sqlquery += " WHERE name LIKE '%" + keyword + "%'";
+    }
+    db.query(sqlquery, (err, result) => {
+      if (err) {
+        res.redirect("./");
+      }
+      res.json(result);
     });
+  });
 
-    app.post("/foodupdated", function (req, res) {
-        // saving data in database
-        let sqlquery = "UPDATE foods SET name = ?, Typical_values_per = ?, Unit_of_the_typical_value = ?, Carbs_per = ?, Unit_of_the_carbs = ?, Fat_per = ?, Unit_of_the_fat = ?, Protein_per = ?, Unit_of_the_protein = ? WHERE id = ?"; // query database to get all the books
-    
-        // execute sql query
-        let id = req.sanitize(req.body.id);
-        let name = req.sanitize(req.body.name);
-        let Typical_values_per = req.sanitize(req.body.Typical_values_per);
-        let Unit_of_the_typical_value = req.sanitize(
-            req.body.Unit_of_the_typical_value
+  //----------------------updatefood session-------------------------------
+  app.get("/updatefood", function (req, res) {
+    res.render("updatefood.html");
+  });
+
+  app.get("/update-result", function (req, res) {
+    let sqlquery = "SELECT * FROM foods WHERE name like ?";
+
+    let word = [req.query.keyword];
+    db.query(sqlquery, word, (err, result) => {
+      if (err || result == "") {
+        res.send("No such food");
+      } else {
+        res.render("update-result.ejs", { availableBooks: result });
+      }
+    });
+  });
+
+//----------------------updatefood session-------------------------------
+  app.post("/food-updated", function (req, res) {
+    // let tijiao = req.body.submit;
+    // console.log(tijiao);
+    // saving data in database
+    let sqlquery =
+      "UPDATE foods SET name = ?, Typical_values_per = ?, Unit_of_the_typical_value = ?, Carbs_per = ?, Unit_of_the_carbs = ?, Fat_per = ?, Unit_of_the_fat = ?, Protein_per = ?, Unit_of_the_protein = ? WHERE name = ?"; // query database to get all the foods
+
+    let name = req.sanitize(req.body.name);
+    let Typical_values_per = req.sanitize(req.body.Typical_values_per);
+    let Unit_of_the_typical_value = req.sanitize(
+      req.body.Unit_of_the_typical_value
+    );
+    let Carbs_per = req.sanitize(req.body.Carbs_per);
+    let Unit_of_the_carbs = req.sanitize(req.body.Unit_of_the_carbs);
+    let Fat_per = req.sanitize(req.body.Fat_per);
+    let Unit_of_the_fat = req.sanitize(req.body.Unit_of_the_fat);
+    let Protein_per = req.sanitize(req.body.Protein_per);
+    let Unit_of_the_protein = req.sanitize(req.body.Unit_of_the_protein);
+    let newrecord = [
+      name,
+      Typical_values_per,
+      Unit_of_the_typical_value,
+      Carbs_per,
+      Unit_of_the_carbs,
+      Fat_per,
+      Unit_of_the_fat,
+      Protein_per,
+      Unit_of_the_protein,
+      name,
+    ];
+//----------------------updatefood session-------------------------------
+    if (req.body.submit == "Update") {
+      db.query(sqlquery, newrecord, (err, result) => {
+        if (err) {
+          return console.error(err.message);
+        } else console.log(result);
+        res.send(
+          "This ingredient is updated to database, name: " +
+            name +
+            Typical_values_per +
+            Unit_of_the_typical_value +
+            Carbs_per +
+            Unit_of_the_carbs +
+            Fat_per +
+            Unit_of_the_fat +
+            Protein_per +
+            Unit_of_the_protein
         );
-        let Carbs_per = req.sanitize(req.body.Carbs_per);
-        let Unit_of_the_carbs = req.sanitize(req.body.Unit_of_the_carbs);
-        let Fat_per = req.sanitize(req.body.Fat_per);
-        let Unit_of_the_fat = req.sanitize(req.body.Unit_of_the_fat);
-        let Protein_per = req.sanitize(req.body.Protein_per);
-        let Unit_of_the_protein = req.sanitize(req.body.Unit_of_the_protein);
-        let newrecord = [
-            name,
-            Typical_values_per,
-            Unit_of_the_typical_value,
-            Carbs_per,
-            Unit_of_the_carbs,
-            Fat_per,
-            Unit_of_the_fat,
-            Protein_per,
-            Unit_of_the_protein,
-            id
-        ];
-        db.query(sqlquery, 
-            newrecord, (err, result) => {
-            if (err) {
-                return console.error(err.message);
-            }
-            res.redirect("/foods");
-        });
-    });
+      });
+    }
+
+//----------------------deletefood session-------------------------------
+    if (req.body.submit == "Delete") {
+      let sqlquery = "DELETE FROM foods WHERE name = ?";
+      let word = [req.body.name];
+      db.query(sqlquery, word, (err, result) => {
+        if (err) {
+          res.send("No such food");
+        } else {
+          res.send("This food is deleted");
+        }
+      });
+    }
+  });
+
+
+
 };
