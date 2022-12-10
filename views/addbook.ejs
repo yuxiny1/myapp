@@ -11,14 +11,14 @@
   <body>
     <h1><%=shopName%>: Add ingredient</h1>
     <form method="POST" action="/bookadded">
-        <p>ingredient name: <input id="name" type="text" name="name" value="" /></p>
-        <p>Typical value per : <input id="Typical_values_per" type="text" name="Typical_values_per" value="" /></p>
-        <p>Unit of the typical value : <input id="Unit_of_the_typical_value" type="text" name="Unit_of_the_typical_value" value="" /></p>
-        <p>Carbs per : <input id="Carbs_per" type="text" name="Carbs_per" value="" /></p>
+        <p>ingredient name: <input id="name" type="text" name="name" value="text" /></p>
+        <p>Typical value per : <input id="Typical_values_per" type="text" name="Typical_values_per" value="number" /></p>
+        <p>Unit of the typical value : <input id="Unit_of_the_typical_value" type="text" name="Unit_of_the_typical_value" value="unit" /></p>
+        <p>Carbs per : <input id="Carbs_per" type="number" name="Carbs_per" value="integer"  /></p>
         <p>Unit of the carbs : <input id="Unit_of_the_carbs" type="text" name="Unit_of_the_carbs" value="" /></p>
-        <p>Protein per : <input id="Protein_per" type="text" name="Protein_per" value="" /></p>
+        <p>Protein per : <input id="Protein_per" type="number" name="Protein_per" value="" /></p>
         <p>Unit of the protein : <input id="Unit_of_the_protein" type="text" name="Unit_of_the_protein" value="" /></p>
-        <p>Fat per : <input id="Fat_per" type="text" name="Fat_per" value="" /></p>
+        <p>Fat per : <input id="Fat_per" type="number" name="Fat_per" value="" /></p>
         <p>Unit of the fat : <input id="Unit_of_the_fat" type="text" name="Unit_of_the_fat" value="" /></p>
 
         <input type="submit" value="Add ingredient" />

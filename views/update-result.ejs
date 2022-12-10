@@ -22,7 +22,7 @@
          <p> Fat per  :<%= ingredient.Fat_per %>
         <%= ingredient.Unit_of_the_fat %></p>
         </li>
-        <p> Pleaes input the value into the fields: </p>
+        <p> If you want to UPDATE or DELETE ! pleaes input the value into the fields: </p>
         <form method="POST" action="/food-updated">
           Food name:
           <input type="text" name="name" value="<%= ingredient.name %>">
@@ -58,18 +58,8 @@
             ></td>
         </form>
       </tr>
-
-      <p> Please input to which ingredient you want to delete</p>
-      <form method="POST" action="/deletefood" onsubmit="return confirm('Are you sure you want to delete this ingredient?');">
-        Food name:
-        <input type="text" name="name" value="">
-        <br>
-        <button>
-        <input type="submit" value="Delete">
-      </button>
-    </form>
     <% }) %>
     </ul>
     </body>
-    
+
 </html>
