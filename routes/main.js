@@ -486,18 +486,6 @@ module.exports = function (app, shopData) {
     });
   });
 
-  //an API that implements get, post, push and delete.
-
-  app.get("/api/:id", (req, res) => {
-    let sqlquery = "SELECT * FROM foods WHERE id = ?";
-    let id = req.params.id;
-    db.query(sqlquery, id, (err, result) => {
-      if (err) {
-        res.redirect("./");
-      }
-      res.json(result);
-    });
-  });
 
   //Custom GET ROUTE - get food by its name
   //Instructions: from the browser just type in http://doc.gold.ac.uk/usr/666/api/foodName replacing "foodName" with the name of the food item to retrieve it
@@ -514,33 +502,8 @@ module.exports = function (app, shopData) {
     });
   });
 
-  //Custom POST ROUTE - add food to the database
-  //Instructions: from the browser just type in http://doc.gold.ac.uk/usr/666/api/foodName/foodCarbs/foodFat/foodProtein replacing "foodName", "foodCarbs", "foodFat" and "foodProtein" with the desired values
-  //e.g. http://doc.gold.ac.uk/usr/666/api/Banana/20/10/5
-
-  // app.post("/api/:name/:carbs/:fat/:protein", function (req, res) {
-  //   let sql =
-  //     "INSERT INTO foods (name, Carbs_per, Fat_per, Protein_per) VALUES ('" +
-  //     req.params["name"] +
-  //     "', " +
-  //     req.params["carbs"] +
-  //     ", " +
-  //     req.params["fat"] +
-  //     ", " +
-  //     req.params["protein"] +
-  //     ")";
-  //   db.query(sql, (err, result) => {
-  //     if (err) throw err;
-  //     console.log(result);
-  //     res.send(result);
-  //   });
-  // });
   /*-------------------------post request--------------------------*/
-
-  //Custom POST ROUTE - add food to the database
-  //Instructions: from the browser just type in http://doc.gold.ac.uk/usr/666/api/foodName/foodTypicalvalue/foodCarbs/foodFat/foodProtein replacing "foodName","foodTypicalValue" "foodCarbs", "foodFat" and "foodProtein" with the desired values
-  //e.g. http://doc.gold.ac.uk/usr/666/api/Banana/20/10/5
-
+  
 //POST ROUTE - insert a food
 //Instructions: in the terminal type the following, replacing the "body" with the key-value pairs for the properties of the document (food item) you wish to insert
 //curl -i -X POST -d '{body}' -H 'Content-Type: application/json' www.doc.gold.ac.uk/usr/666/api
@@ -571,14 +534,14 @@ module.exports = function (app, shopData) {
   //Instructions: from the browser just type in http://doc.gold.ac.uk/usr/666/api/foodName replacing "foodName" with the name of the food item to delete it
   //e.g. http://doc.gold.ac.uk/usr/666/api/Banana
 
-  app.delete("/api/:name", function (req, res) {
-    let sql = "DELETE FROM foods WHERE name = '" + req.params["name"] + "'";
-    db.query(sql, (err, result) => {
-      if (err) throw err;
-      console.log(result);
-      res.send(result);
-    });
-  });
+  // app.delete("/api/:name", function (req, res) {
+  //   let sql = "DELETE FROM foods WHERE name = '" + req.params["name"] + "'";
+  //   db.query(sql, (err, result) => {
+  //     if (err) throw err;
+  //     console.log(result);
+  //     res.send(result);
+  //   });
+  // });
 
   // ----------------------end of api session------------------------
 };

@@ -1,12 +1,53 @@
 # myapp
  this is a dynamic web application called"Recipe Buddy"
 
+R1: Homepage - views/index.ejs
 
-R1: Home page:
+R1A: Display the name of the web application. the home page of the web application.  you could simplify type the website to see it :
+https://www.doc.gold.ac.uk/usr/666/
 
-R1A: Display the name of the web application.
+views/index.ejs Title on line 4 and the Welcome messages  
+
+R1A: Display the name of the web application. views/index.ejs line 11 
+R1B:  Display links to other pages or a navigation bar that contains links to other pages. from line 12- line 20;
+
+R2: About page - views/about.ejs
+
+R2A: line 12 Display information about the web application including my name as the developer. line 7 Display a link to the home page or a navigation bar that contains links to other pages.
+
+R3A: Register page - views/register.ejs. views/register.ejs form lines 14-70 in views/partials/header.ejs will show the function of registering a new user for the databse. Each user data consists of the following fields: first name, last name, email address, username and password. To provide security of data in storage, a hashed password should only be saved in the database, not a plain password. Futhermore, line 5 show s a navigation to the home page.
+
+R3B:routes/main.js lines 124-189 R3B: Collect form data to be passed to the back-end (database) and store user data in the database. Each user data consists of the following fields: first name, last name, email address, username and password. To provide security of data in storage, a hashed password should only be saved in the database, not a plain password.
+
+
+
+R3C: Display a message indicating that add operation has been done.
+
+R4: Login page - views/login.ejs
+
+views/login.ejs lines 22-44 and line 9 which includes the header partial from views/partials/header.ejs which contains the navigation R4A: Display a form to users to log in to the dynamic web application. The form should consist of the following items: username and password. Display a link to the home page or a navigation bar that contains links to other pages.
+
+routes/main.js lines 191-260 R4B: Collect form data to be checked against data stored for each registered user in the database. Users are logged in if and only if both username and password are correct.
+
+views/loggedin.ejs if successful and re-render views/login.ejs lines 31-39 with appropriate messages if not – controlled in routes/main.js lines 219-224 and lines 239-252 R4C: Display a message indicating whether login is successful or not and why not successful.
+
+R5: Logout - views/logout.ejs
+
+routes/main.js lines 263-270 and views/logout.ejs There is a way to logout, a message is displayed upon successful logout.
+
+R6: Add food page (only available to logged-in users) - views/addFood.ejs
+
+views/addFood.ejs R6A: Display a form to users to add a new food item to the database. The form should consist of the following items: name, typical values, unit of the typical value, calories, carbs, fat, protein, salt, and sugar. Display a link to the home page or a navigation bar that contains links to other pages.
+
+routes/main.js lines 423-470 with saving the creator on line 452 R6B: Collect form data to be passed to the back-end (database) and store food items in the database. Each food item consists of the following fields: name, typical values, unit of the typical value, calories, carbs, fat, protein, salt, and sugar. Going beyond by saving the username of the user who has added this food item to the database.
+
+displays views/foodAdded.ejs (from routes/main.js lines 455-466) R6C: Display a message indicating that add operation has been done.
+
+
 
 R1B:  Display links to other pages or a navigation bar that contains links to other pages.
+
+
 
 R2: About page: 
 
