@@ -292,15 +292,19 @@ module.exports = function (app, shopData) {
       Protein_per,
       Unit_of_the_protein,
     ];
-
-
+//------------------excute sql query------------------
     db.query(sqlquery, newrecord, (err, result) => {
   
       if (err) {
         return console.error(err.message);
       } else
         res.send(
-          "The food has been added to the database. <a href='/list'>Click here to go back to the list</a>"
+          "The food has been added to the database." + name + 
+          " the unit of the typical value is " + Unit_of_the_typical_value +
+          " the unit of the carbs is " + Unit_of_the_carbs +
+          " the unit of the fat is " + Unit_of_the_fat +
+          " the unit of the protein is " + Unit_of_the_protein +
+          "<a href='/list'>Click here to go back to the list</a>"
         );
     });
   });
