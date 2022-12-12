@@ -314,7 +314,7 @@ module.exports = function (app, shopData) {
   });
 
   //----------------------updatefood session-------------------------------
-  app.get("/updatefood", function (req, res) {
+  app.get("/updatefood", redirectLogin,function (req, res) {
     res.render("updatefood.html");
   });
 
