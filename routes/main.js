@@ -244,7 +244,7 @@ module.exports = function (app, shopData) {
   });
   //---------------------------list page---------------------------
   app.get("/list", function (req, res) {
-    let sqlquery = "SELECT * FROM foods"; // query database to get all the books
+    let sqlquery = "SELECT * FROM foods"; // query database to get all the foods
     // execute sql query
     db.query(sqlquery, (err, result) => {
       if (err) {
@@ -256,18 +256,18 @@ module.exports = function (app, shopData) {
     });
   });
 
-  //-------------------------add book page-------------------------
-  // GET route for the add book page
-  app.get("/addbook", redirectLogin, function (req, res) {
-    res.render("addbook.ejs", shopData);
+  //-------------------------add foods page-------------------------
+  // GET route for the add foods page
+  app.get("/addfood", redirectLogin, function (req, res) {
+    res.render("addfood.ejs", shopData);
   });
 
-  // POST route for the add book page, validate the input and add the book to the database
+  // POST route for the add food page, validate the input and add the food to the database
 
-  app.post("/bookadded", function (req, res) {
+  app.post("/foodadded", function (req, res) {
     // saving data in database
     let sqlquery =
-      "INSERT INTO foods (name, Typical_values_per, Unit_of_the_typical_value, Carbs_per, Unit_of_the_carbs, Fat_per, Unit_of_the_fat, Protein_per, Unit_of_the_protein) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"; // query database to get all the books
+      "INSERT INTO foods (name, Typical_values_per, Unit_of_the_typical_value, Carbs_per, Unit_of_the_carbs, Fat_per, Unit_of_the_fat, Protein_per, Unit_of_the_protein) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"; // query database to get all the foods
 
     // execute sql query
     let name = req.sanitize(req.body.name);
@@ -310,39 +310,6 @@ module.exports = function (app, shopData) {
             Unit_of_the_protein +
             "<a href='/list'>Click here to go back to the list</a>"
         );
-    });
-  });
-  //----------------------api session-------------------------------
-  //Add a feature to your API to allow a parameter to add a search term. For example, this URL will search for books that contain the word ‘universe’:
-
-  /*http://localhost:7000/api?keyword=apple this is an example of how to use the api, and you could use those api on the website to search for the food you want to add to the list
-   */
-  app.get("/api", (req, res) => {
-    let sqlquery = "SELECT * FROM foods";
-    // execute sql query
-    let keyword = req.query.keyword;
-    // if keyword is not empty, add the keyword to the sql query
-    if (keyword) {
-      sqlquery += " WHERE name LIKE '%" + keyword + "%'";
-    }
-    db.query(sqlquery, (err, result) => {
-      if (err) {
-        res.redirect("./");
-      }
-      res.json(result);
-    });
-  });
-
-  //an API that implements get, post, push and delete.
-
-  app.get("/api/:id", (req, res) => {
-    let sqlquery = "SELECT * FROM foods WHERE id = ?";
-    let id = req.params.id;
-    db.query(sqlquery, id, (err, result) => {
-      if (err) {
-        res.redirect("./");
-      }
-      res.json(result);
     });
   });
 
@@ -497,4 +464,121 @@ module.exports = function (app, shopData) {
       }
     });
   });
+
+  //----------------------api session-------------------------------
+  //Add a feature to your API to allow a parameter to add a search term. For example, this URL will search for foods that contain the word ‘universe’:
+
+  /*http://localhost:7000/api?keyword=apple this is an example of how to use the api, and you could use those api on the website to search for the food you want to add to the list
+   */
+  app.get("/api", (req, res) => {
+    let sqlquery = "SELECT * FROM foods";
+    // execute sql query
+    let keyword = req.query.keyword;
+    // if keyword is not empty, add the keyword to the sql query
+    if (keyword) {
+      sqlquery += " WHERE name LIKE '%" + keyword + "%'";
+    }
+    db.query(sqlquery, (err, result) => {
+      if (err) {
+        res.redirect("./");
+      }
+      res.json(result);
+    });
+  });
+
+  //an API that implements get, post, push and delete.
+
+  app.get("/api/:id", (req, res) => {
+    let sqlquery = "SELECT * FROM foods WHERE id = ?";
+    let id = req.params.id;
+    db.query(sqlquery, id, (err, result) => {
+      if (err) {
+        res.redirect("./");
+      }
+      res.json(result);
+    });
+  });
+
+  //Custom GET ROUTE - get food by its name
+  //Instructions: from the browser just type in http://doc.gold.ac.uk/usr/666/api/foodName replacing "foodName" with the name of the food item to retrieve it
+  //using curl type: " curl -i www.doc.gold.ac.uk/usr/666/api/foodName " in the terminal (again replacing "foodName" with the desired item name)
+  //e.g. curl -i www.doc.gold.ac.uk/usr/666/api/Banana
+  // CRUD operations of api
+  app.get("/api/:name", function (req, res) {
+    console.log(req.params["name"]);
+    let sql = "SELECT * FROM foods WHERE name = '" + req.params["name"] + "'";
+    db.query(sql, (err, result) => {
+      if (err) throw err;
+      console.log(result);
+      res.send(result);
+    });
+  });
+
+  //Custom POST ROUTE - add food to the database
+  //Instructions: from the browser just type in http://doc.gold.ac.uk/usr/666/api/foodName/foodCarbs/foodFat/foodProtein replacing "foodName", "foodCarbs", "foodFat" and "foodProtein" with the desired values
+  //e.g. http://doc.gold.ac.uk/usr/666/api/Banana/20/10/5
+
+  // app.post("/api/:name/:carbs/:fat/:protein", function (req, res) {
+  //   let sql =
+  //     "INSERT INTO foods (name, Carbs_per, Fat_per, Protein_per) VALUES ('" +
+  //     req.params["name"] +
+  //     "', " +
+  //     req.params["carbs"] +
+  //     ", " +
+  //     req.params["fat"] +
+  //     ", " +
+  //     req.params["protein"] +
+  //     ")";
+  //   db.query(sql, (err, result) => {
+  //     if (err) throw err;
+  //     console.log(result);
+  //     res.send(result);
+  //   });
+  // });
+  /*-------------------------post request--------------------------*/
+
+  //Custom POST ROUTE - add food to the database
+  //Instructions: from the browser just type in http://doc.gold.ac.uk/usr/666/api/foodName/foodTypicalvalue/foodCarbs/foodFat/foodProtein replacing "foodName","foodTypicalValue" "foodCarbs", "foodFat" and "foodProtein" with the desired values
+  //e.g. http://doc.gold.ac.uk/usr/666/api/Banana/20/10/5
+
+//POST ROUTE - insert a food
+//Instructions: in the terminal type the following, replacing the "body" with the key-value pairs for the properties of the document (food item) you wish to insert
+//curl -i -X POST -d '{body}' -H 'Content-Type: application/json' www.doc.gold.ac.uk/usr/666/api
+//e.g. for banana: curl -i -X POST -d '{ "name":"Banana", "valueAmount":"100", "unit":"grams", "calories":"88", "carbs":"23", "sugars":"12", "fat":"0.3", "protein":"1.1", "salt":"1", "creator": "yourUsername"}' -H 'Content-Type: application/json' www.doc.gold.ac.uk/usr/666/api
+
+  app.post("/api/:name/:typicalvalue/:carbs/:fat/:protein", function (req, res) {
+    let sql =
+      "INSERT INTO foods (name, Typical_value_per, Carbs_per, Fat_per, Protein_per) VALUES ('" +
+      req.params["name"] +
+      "', " +
+      req.params["typicalvalue"] +
+      ", " +
+      req.params["carbs"] +
+      ", " +
+      req.params["fat"] +
+      ", " +
+      req.params["protein"] +
+      ")";
+    db.query
+    (sql, (err,result) => {
+      if (err) throw err;
+      console.log(result);
+      res.send(result);
+    });
+  });
+
+  //Custom DELETE ROUTE - delete food from the database
+  //Instructions: from the browser just type in http://doc.gold.ac.uk/usr/666/api/foodName replacing "foodName" with the name of the food item to delete it
+  //e.g. http://doc.gold.ac.uk/usr/666/api/Banana
+
+  app.delete("/api/:name", function (req, res) {
+    let sql = "DELETE FROM foods WHERE name = '" + req.params["name"] + "'";
+    db.query(sql, (err, result) => {
+      if (err) throw err;
+      console.log(result);
+      res.send(result);
+    });
+  });
+
+  // ----------------------end of api session------------------------
 };
