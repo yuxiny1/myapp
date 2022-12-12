@@ -5,7 +5,7 @@ module.exports = function (app, shopData) {
   const request = require("request");
   //route for the weather api
 
-//--------------------------redirect login ----------------------------
+  //--------------------------redirect login ----------------------------
   // GET route for the home page
   const redirectLogin = (req, res, next) => {
     if (!req.session.userId) {
@@ -15,7 +15,7 @@ module.exports = function (app, shopData) {
     }
   };
 
-//-------------------------after login ----------------------------
+  //-------------------------after login ----------------------------
   function afterLogin(message, url) {
     // this function is used to redirect the user to the login page after a successful login
     let msg =
@@ -35,7 +35,7 @@ module.exports = function (app, shopData) {
   app.get("/about", function (req, res) {
     res.render("about.ejs", shopData);
   });
-/*------------------ search and login ----------------------*/
+  /*------------------ search and login ----------------------*/
 
   //searching in the database
   app.get("/search", function (req, res) {
@@ -51,7 +51,7 @@ module.exports = function (app, shopData) {
       if (err) {
         res.redirect("./");
       }
-      let newData = Object.assign({}, shopData, { availableBooks: result });
+      let newData = Object.assign({}, shopData, { availablefoods: result });
       console.log(newData);
       if (result.length == 0) {
         res.send("No results found");
@@ -59,7 +59,7 @@ module.exports = function (app, shopData) {
       res.render("list.ejs", newData);
     });
   });
-/*------------------ Reigster and login ----------------------*/    
+  /*------------------ Reigster and login ----------------------*/
 
   // GET route for the register page
   app.get("/register", function (req, res) {
@@ -242,7 +242,7 @@ module.exports = function (app, shopData) {
       }
     });
   });
-//---------------------------list page---------------------------
+  //---------------------------list page---------------------------
   app.get("/list", function (req, res) {
     let sqlquery = "SELECT * FROM foods"; // query database to get all the books
     // execute sql query
@@ -250,7 +250,7 @@ module.exports = function (app, shopData) {
       if (err) {
         res.redirect("./");
       }
-      let newData = Object.assign({}, shopData, { availableBooks: result });
+      let newData = Object.assign({}, shopData, { availablefoods: result });
       console.log(newData);
       res.render("list.ejs", newData);
     });
@@ -292,24 +292,31 @@ module.exports = function (app, shopData) {
       Protein_per,
       Unit_of_the_protein,
     ];
-//------------------excute sql query------------------
+    //------------------excute sql query------------------
     db.query(sqlquery, newrecord, (err, result) => {
-  
       if (err) {
         return console.error(err.message);
       } else
         res.send(
-          "The food has been added to the database." + name + 
-          " the unit of the typical value is " + Unit_of_the_typical_value +
-          " the unit of the carbs is " + Unit_of_the_carbs +
-          " the unit of the fat is " + Unit_of_the_fat +
-          " the unit of the protein is " + Unit_of_the_protein +
-          "<a href='/list'>Click here to go back to the list</a>"
+          "The food has been added to the database." +
+            name +
+            " the unit of the typical value is " +
+            Unit_of_the_typical_value +
+            " the unit of the carbs is " +
+            Unit_of_the_carbs +
+            " the unit of the fat is " +
+            Unit_of_the_fat +
+            " the unit of the protein is " +
+            Unit_of_the_protein +
+            "<a href='/list'>Click here to go back to the list</a>"
         );
     });
   });
   //----------------------api session-------------------------------
   //Add a feature to your API to allow a parameter to add a search term. For example, this URL will search for books that contain the word ‘universe’:
+
+  /*http://localhost:7000/api?keyword=apple this is an example of how to use the api, and you could use those api on the website to search for the food you want to add to the list
+   */
   app.get("/api", (req, res) => {
     let sqlquery = "SELECT * FROM foods";
     // execute sql query
@@ -319,6 +326,19 @@ module.exports = function (app, shopData) {
       sqlquery += " WHERE name LIKE '%" + keyword + "%'";
     }
     db.query(sqlquery, (err, result) => {
+      if (err) {
+        res.redirect("./");
+      }
+      res.json(result);
+    });
+  });
+
+  //an API that implements get, post, push and delete.
+
+  app.get("/api/:id", (req, res) => {
+    let sqlquery = "SELECT * FROM foods WHERE id = ?";
+    let id = req.params.id;
+    db.query(sqlquery, id, (err, result) => {
       if (err) {
         res.redirect("./");
       }
@@ -339,7 +359,7 @@ module.exports = function (app, shopData) {
       if (err || result == "") {
         res.send("No such food");
       } else {
-        res.render("update-result.ejs", { availableBooks: result });
+        res.render("update-result.ejs", { availablefoods: result });
       }
     });
   });
@@ -350,9 +370,9 @@ module.exports = function (app, shopData) {
     // console.log(tijiao);
     // saving data in database
     let sqlquery =
-      "UPDATE foods SET name = ?, Typical_values_per = ?, Unit_of_the_typical_value = ?, Carbs_per = ?, Unit_of_the_carbs = ?, Fat_per = ?, Unit_of_the_fat = ?, Protein_per = ?, Unit_of_the_protein = ? WHERE name = ?"; 
-      
-      // query database to get all the foods
+      "UPDATE foods SET name = ?, Typical_values_per = ?, Unit_of_the_typical_value = ?, Carbs_per = ?, Unit_of_the_carbs = ?, Fat_per = ?, Unit_of_the_fat = ?, Protein_per = ?, Unit_of_the_protein = ? WHERE name = ?";
+
+    // query database to get all the foods
 
     let name = req.sanitize(req.body.name);
     let Typical_values_per = req.sanitize(req.body.Typical_values_per);
@@ -444,7 +464,7 @@ module.exports = function (app, shopData) {
     for (let key in foodAmount) {
       foodAmountArray.push(foodAmount[key]);
     }
-  // get the name of the food and the amount of it from the form
+    // get the name of the food and the amount of it from the form
     for (let i = 0; i < foodName.length; i++) {
       foodNameArray.push(foodName[i]);
     }
