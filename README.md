@@ -91,4 +91,4 @@ R11: form validation
 implemented in routes/main.js lines 44, 71-87, 167-170, 273-293,
 334-364 with additional custom validators on lines 8-79 and more validation done with the help of HTML attributes on every form input All form data should have validations, examples include checking password length, email validation, integer data is integer and etc.
 
-R12: MySQL.
+R12: MySQL
