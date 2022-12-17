@@ -393,6 +393,7 @@ module.exports = function (app, shopData) {
 
     //----------------------updatefood session-------------------------------
     if (user == associatedUser) {
+      //update the food of the user
       if (req.body.submit == "Update") {
         db.query(sqlquery, newrecord, (err, result) => {
           console.log(result);
@@ -415,6 +416,7 @@ module.exports = function (app, shopData) {
         });
       }
       //----------------------deletefood session----------------------------
+      //delete the food of the user
       if (req.body.submit == "Delete") {
         let sqlquery = "DELETE FROM foods WHERE name = ?";
         let word = [req.body.name];
@@ -426,7 +428,8 @@ module.exports = function (app, shopData) {
           }
         });
       }
-
+      //----------------------deleteallfood session----------------------------
+      //delete all the foods of the user
       if (req.body.submit == "DeleteAll") {
         let word = [req.session.userId];
         let sqlquery = "DELETE FROM foods WHERE associateUser = ?";
@@ -514,7 +517,9 @@ module.exports = function (app, shopData) {
   //----------------------api session-------------------------------
   //Add a feature to your API to allow a parameter to add a search term. For example, this URL will search for foods that contain the word ‘universe’:
 
-  /*http://localhost:7000/api?keyword=apple this is an example of how to use the api, and you could use those api on the website to search for the food you want to add to the list
+  /*localhost:7777/api?token=VPMFbpbLDM42pO6D&deletefood=apple
+  firstly, you have to create the toekn for you , and then , you use the token=; 
+  lastly, you use update or delete. this is an example of how to use the api, and you could use those api on the website to search for the food you want to add to the list
    */
   app.get("/api", (req, res) => {
     // req.query.token get variables from html
@@ -541,6 +546,7 @@ module.exports = function (app, shopData) {
           };
           res.send(response);
         } else {
+          // if the token is valid, then check if the user wants to update or delete a food
           if (result.length == 0) {
             let response = {
               status: "error",
@@ -550,6 +556,7 @@ module.exports = function (app, shopData) {
           } else {
             let username = result[0].userName;
             console.log(username);
+            // if the user wants to update a food, then check if the food exists
             if (updatefood == undefined && deletefood == undefined) {
               let sql = "SELECT * FROM foods";
               db.query(sql, (err, result) => {
@@ -569,6 +576,7 @@ module.exports = function (app, shopData) {
                 }
               });
             }
+            // if the user wants to delete a food, then check if the food exists
             if (deletefood != undefined && updatefood == undefined) {
               let sql = "SELECT *FROM foods WHERE name='" + deletefood + "'";
               db.query(sql, (err, result) => {
@@ -579,6 +587,7 @@ module.exports = function (app, shopData) {
                   };
                   res.send(response);
                 } else {
+                  // if the food exists, then check if the food exist
                   if (result.length == 0) {
                     let response = {
                       status: "error",
@@ -586,7 +595,7 @@ module.exports = function (app, shopData) {
                     };
                     res.send(response);
                   }
-
+                  // if the food exists, then check if the user is authorized to delete the food
                   if (username == result[0].associateUser) {
                     let sql =
                       "DELETE FROM foods WHERE name = '" + deletefood + "'";
@@ -615,6 +624,7 @@ module.exports = function (app, shopData) {
                 }
               });
             }
+            // if the user wants to update a food, then check if the food exists
             if (updatefood != undefined && deletefood == undefined) {
               if (foodelement == undefined || elementvalue == undefined) {
                 let response = {
@@ -633,6 +643,7 @@ module.exports = function (app, shopData) {
                   "' AND associateUser = '" +
                   username +
                   "'";
+                // if the food exists, then check if the user is authorized to update the food and the elements
                 db.query(sql, (err, result) => {
                   if (err) {
                     console.log(err);
@@ -672,11 +683,13 @@ module.exports = function (app, shopData) {
 
   //POST ROUTE - insert a food
   //Instructions: in the terminal type the following, replacing the "body" with the key-value pairs for the properties of the document (food item) you wish to insert
-  //curl -i -X POST -d '{body}' -H 'Content-Type: application/json' www.doc.gold.ac.uk/usr/666/api
+  /*curl -i -X POST -d '{body}' -H 'Content-Type: application/json' 
+  localhost:7777/api?token=IsH8ljEIuMEipWwC&updatefood=Banana&foodelement=Carbs_per&elementvalue=11
+
   //e.g. for banana: curl -i -X POST -d '{ "name":"Banana", "valueAmount":"100", "unit":"grams", "calories":"88", "carbs":"23", "sugars":"12", "fat":"0.3", "protein":"1.1", "salt":"1", "creator": "yourUsername"}' -H 'Content-Type: application/json' www.doc.gold.ac.uk/usr/666/api
 
   //Custom DELETE ROUTE - delete food from the database
-  /*Instructions: from the browser just type in 
+  Instructions: from the browser just type in 
   for example localhost:7777/api?token=VPMFbpbLDM42pO6D&deletefood=apple
   replacing "foodName" with the name of the food item to delete it */
 
@@ -684,7 +697,7 @@ module.exports = function (app, shopData) {
   app.get("/apiGenerator", redirectLogin, function (req, res) {
     res.render("apiGenerator.ejs", shopData);
   });
-
+// generate tokens
   app.post("/createAPI_tokens", redirectLogin, function (req, res) {
     let associatedUsername = req.session.userId;
     function generateToken() {
