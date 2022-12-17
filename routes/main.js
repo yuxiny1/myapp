@@ -243,7 +243,7 @@ module.exports = function (app, shopData) {
     });
   });
   //---------------------------list page---------------------------
-  app.get("/list", function (req, res) {
+  app.get("/list", redirectLogin,function (req, res) {
     let sqlquery = "SELECT * FROM foods"; // query database to get all the foods
     // execute sql query
     db.query(sqlquery, (err, result) => {
