@@ -9,7 +9,7 @@ module.exports = function (app, shopData) {
   // GET route for the home page
   const redirectLogin = (req, res, next) => {
     if (!req.session.userId) {
-      res.redirect("/login");
+      res.redirect("https://www.doc.gold.ac.uk/usr/666/login");
     } else {
       next();
     }
@@ -22,7 +22,7 @@ module.exports = function (app, shopData) {
     let msg =
       "<script>alert('" +
       message +
-      "');window.location.href='" +
+      "');window.location.href='https://www.doc.gold.ac.uk/usr/666/" +
       url +
       "';</script>";
     // another local version should be ./
