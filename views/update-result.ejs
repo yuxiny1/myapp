@@ -53,15 +53,15 @@
           <br>
           <input id="submit" type="submit" name="submit" value="Update">
           <td><input id="submit" type="submit" name="submit" value="Delete"
-            onclick="return confirm('Are you sure you want to delete this ingredient?');"
-          
-            ></td>
+            onclick="return confirm('Are you sure you want to delete this ingredient?');"></td>
           
         </form>
       </tr>
     <% }) %>
+    <form method="POST" action="/food-updated">
       <input id="submit" type="submit" name="submit" value="DeleteAll"
-            onclick="return confirm('Are you sure you want to delete this ingredient?');">  
+      onclick="return confirm('Are you sure you want to delete this ingredient?');">  
+    </form>
   </ul>
     
     </body>

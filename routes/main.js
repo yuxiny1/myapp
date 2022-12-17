@@ -360,9 +360,7 @@ module.exports = function (app, shopData) {
 
     let user = req.session.userId;
     let associatedUser = updatefood_data[0].associateUser;
-    console.log(associatedUser);
-    console.log(user);
-
+  
     let sqlquery =
       "UPDATE foods SET name = ?, Typical_values_per = ?, Unit_of_the_typical_value = ?, Carbs_per = ?, Unit_of_the_carbs = ?, Fat_per = ?, Unit_of_the_fat = ?, Protein_per = ?, Unit_of_the_protein = ?, associateUser = ? WHERE name = ?";
     // query database to get all the foods
@@ -379,7 +377,6 @@ module.exports = function (app, shopData) {
     let Protein_per = req.sanitize(req.body.Protein_per);
     let Unit_of_the_protein = req.sanitize(req.body.Unit_of_the_protein);
     let associateUser = req.session.userId;
-    console.log(associateUser);
     let newrecord = [
       name,
       Typical_values_per,
@@ -429,6 +426,22 @@ module.exports = function (app, shopData) {
           }
         });
       }
+
+      if(req.body.submit == "DeleteAll"){
+        let word = [req.session.userId];
+        let sqlquery = "DELETE FROM foods WHERE associateUser = ?";
+        console.log(word);
+        console.log(sqlquery);
+        db.query(sqlquery, word
+          , (err, result) => {
+          if (err) {
+            res.send("No such food");
+          } else {
+            res.send("All your foods are deleted");
+          }
+        });
+      }
+
     } else {
       res.send("You are not allowed to update this food");
     }
@@ -669,7 +682,9 @@ module.exports = function (app, shopData) {
   //e.g. for banana: curl -i -X POST -d '{ "name":"Banana", "valueAmount":"100", "unit":"grams", "calories":"88", "carbs":"23", "sugars":"12", "fat":"0.3", "protein":"1.1", "salt":"1", "creator": "yourUsername"}' -H 'Content-Type: application/json' www.doc.gold.ac.uk/usr/666/api
 
   //Custom DELETE ROUTE - delete food from the database
-  //Instructions: from the browser just type in http://doc.gold.ac.uk/usr/666/api/foodName replacing "foodName" with the name of the food item to delete it
+  /*Instructions: from the browser just type in 
+  for example localhost:7777/api?token=VPMFbpbLDM42pO6D&deletefood=apple
+  replacing "foodName" with the name of the food item to delete it */
 
   //---------------------------generate tokens --------------------
   app.get("/apiGenerator", redirectLogin, function (req, res) {
