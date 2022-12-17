@@ -15,6 +15,7 @@ module.exports = function (app, shopData) {
     }
   };
 
+  var updatefood_data;
   //-------------------------after login ----------------------------
   function afterLogin(message, url) {
     // this function is used to redirect the user to the login page after a successful login
@@ -265,11 +266,7 @@ module.exports = function (app, shopData) {
   // POST route for the add food page, validate the input and add the food to the database
 
   app.post("/foodadded", function (req, res) {
-    // saving data in database
-    let sqlquery =
-      "INSERT INTO foods (name, Typical_values_per, Unit_of_the_typical_value, Carbs_per, Unit_of_the_carbs, Fat_per, Unit_of_the_fat, Protein_per, Unit_of_the_protein) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"; // query database to get all the foods
-
-    // execute sql query
+    // assgin variables to the input
     let name = req.sanitize(req.body.name);
     let Typical_values_per = req.sanitize(req.body.Typical_values_per);
     let Unit_of_the_typical_value = req.sanitize(
@@ -281,6 +278,7 @@ module.exports = function (app, shopData) {
     let Unit_of_the_fat = req.sanitize(req.body.Unit_of_the_fat);
     let Protein_per = req.sanitize(req.body.Protein_per);
     let Unit_of_the_protein = req.sanitize(req.body.Unit_of_the_protein);
+    let associateUser = req.session.userId;
     let newrecord = [
       name,
       Typical_values_per,
@@ -291,25 +289,47 @@ module.exports = function (app, shopData) {
       Unit_of_the_fat,
       Protein_per,
       Unit_of_the_protein,
+      associateUser,
     ];
-    //------------------excute sql query------------------
-    db.query(sqlquery, newrecord, (err, result) => {
+    //check if the food name already exists in the database
+
+    let sqlqueryNameCheck = "SELECT *FROM foods WHERE name =  '" + name + "' ";
+    db.query(sqlqueryNameCheck, (err, result) => {
       if (err) {
-        return console.error(err.message);
-      } else
-        res.send(
-          "The food has been added to the database." +
-            name +
-            " the unit of the typical value is " +
-            Unit_of_the_typical_value +
-            " the unit of the carbs is " +
-            Unit_of_the_carbs +
-            " the unit of the fat is " +
-            Unit_of_the_fat +
-            " the unit of the protein is " +
-            Unit_of_the_protein +
-            "<a href='/list'>Click here to go back to the list</a>"
-        );
+        console.log(err);
+        res.send(err);
+      }
+      if (result.length > 0) {
+        console.log("the food name already exists in the database");
+        res.send("the food name already exists in the database");
+      } else {
+        // saving data in database
+        let sqlquery =
+          "INSERT INTO foods (name, Typical_values_per, Unit_of_the_typical_value, Carbs_per, Unit_of_the_carbs, Fat_per, Unit_of_the_fat, Protein_per, Unit_of_the_protein,associateUser) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+        // query database to get all the foods
+
+        //------------------excute sql query------------------
+        db.query(sqlquery, newrecord, (err, result) => {
+          if (err) {
+            return console.error(err.message);
+          } else
+            res.send(
+              "The food has been added to the database." +
+                name +
+                " the unit of the typical value is " +
+                Unit_of_the_typical_value +
+                " the unit of the carbs is " +
+                Unit_of_the_carbs +
+                " the unit of the fat is " +
+                Unit_of_the_fat +
+                " the unit of the protein is " +
+                Unit_of_the_protein +
+                "user name is " +
+                associateUser +
+                "<a href='/list'>Click here to go back to the list</a>"
+            );
+        });
+      }
     });
   });
 
@@ -319,13 +339,14 @@ module.exports = function (app, shopData) {
   });
 
   app.get("/update-result", function (req, res) {
-    let sqlquery = "SELECT * FROM foods WHERE name like ?";
-
     let word = [req.query.keyword];
+    let sqlquery = "SELECT * FROM foods WHERE name LIKE '%" + word + "%'"; // query database to get all the ingredients
     db.query(sqlquery, word, (err, result) => {
       if (err || result == "") {
         res.send("No such food");
       } else {
+        updatefood_data = result;
+        console.log(updatefood_data);
         res.render("update-result.ejs", { availablefoods: result });
       }
     });
@@ -335,10 +356,15 @@ module.exports = function (app, shopData) {
   app.post("/food-updated", function (req, res) {
     // let tijiao = req.body.submit;
     // console.log(tijiao);
-    // saving data in database
-    let sqlquery =
-      "UPDATE foods SET name = ?, Typical_values_per = ?, Unit_of_the_typical_value = ?, Carbs_per = ?, Unit_of_the_carbs = ?, Fat_per = ?, Unit_of_the_fat = ?, Protein_per = ?, Unit_of_the_protein = ? WHERE name = ?";
+    // saving data in database)
 
+    let user = req.session.userId;
+    let associatedUser = updatefood_data[0].associateUser;
+    console.log(associatedUser);
+    console.log(user);
+
+    let sqlquery =
+      "UPDATE foods SET name = ?, Typical_values_per = ?, Unit_of_the_typical_value = ?, Carbs_per = ?, Unit_of_the_carbs = ?, Fat_per = ?, Unit_of_the_fat = ?, Protein_per = ?, Unit_of_the_protein = ?, associateUser = ? WHERE name = ?";
     // query database to get all the foods
 
     let name = req.sanitize(req.body.name);
@@ -352,6 +378,8 @@ module.exports = function (app, shopData) {
     let Unit_of_the_fat = req.sanitize(req.body.Unit_of_the_fat);
     let Protein_per = req.sanitize(req.body.Protein_per);
     let Unit_of_the_protein = req.sanitize(req.body.Unit_of_the_protein);
+    let associateUser = req.session.userId;
+    console.log(associateUser);
     let newrecord = [
       name,
       Typical_values_per,
@@ -362,40 +390,47 @@ module.exports = function (app, shopData) {
       Unit_of_the_fat,
       Protein_per,
       Unit_of_the_protein,
+      associateUser,
       name,
     ];
-    //----------------------updatefood session-------------------------------
-    if (req.body.submit == "Update") {
-      db.query(sqlquery, newrecord, (err, result) => {
-        if (err) {
-          return console.error(err.message);
-        } else console.log(result);
-        res.send(
-          "This ingredient is updated to database, name: " +
-            name +
-            Typical_values_per +
-            Unit_of_the_typical_value +
-            Carbs_per +
-            Unit_of_the_carbs +
-            Fat_per +
-            Unit_of_the_fat +
-            Protein_per +
-            Unit_of_the_protein
-        );
-      });
-    }
 
-    //----------------------deletefood session----------------------------
-    if (req.body.submit == "Delete") {
-      let sqlquery = "DELETE FROM foods WHERE name = ?";
-      let word = [req.body.name];
-      db.query(sqlquery, word, (err, result) => {
-        if (err) {
-          res.send("No such food");
-        } else {
-          res.send("This food is deleted");
-        }
-      });
+    //----------------------updatefood session-------------------------------
+    if (user == associatedUser) {
+      if (req.body.submit == "Update") {
+        db.query(sqlquery, newrecord, (err, result) => {
+          console.log(result);
+          if (err) {
+            return console.error(err.message);
+          } else console.log(result);
+          res.send(
+            "This ingredient is updated to database, name: " +
+              name +
+              Typical_values_per +
+              Unit_of_the_typical_value +
+              Carbs_per +
+              Unit_of_the_carbs +
+              Fat_per +
+              Unit_of_the_fat +
+              Protein_per +
+              Unit_of_the_protein +
+              associateUser
+          );
+        });
+      }
+      //----------------------deletefood session----------------------------
+      if (req.body.submit == "Delete") {
+        let sqlquery = "DELETE FROM foods WHERE name = ?";
+        let word = [req.body.name];
+        db.query(sqlquery, word, (err, result) => {
+          if (err) {
+            res.send("No such food");
+          } else {
+            res.send("This food is deleted");
+          }
+        });
+      }
+    } else {
+      res.send("You are not allowed to update this food");
     }
   });
 
@@ -472,13 +507,15 @@ module.exports = function (app, shopData) {
    */
   app.get("/api", (req, res) => {
     // req.query.token get variables from html
+    //initialize the variables
     let token = req.sanitize(req.query.token);
     let updatefood = req.sanitize(req.query.updatefood);
     let deletefood = req.sanitize(req.query.deletefood);
     let foodelement = req.sanitize(req.query.foodelement);
     let elementvalue = req.sanitize(req.query.elementvalue);
-    console.log("element value = "+ elementvalue);
-    console.log("food element = "+ foodelement);
+    // print the variables
+    console.log("element value = " + elementvalue);
+    console.log("food element = " + foodelement);
     console.log("token =" + token);
     console.log("updatefood =" + updatefood);
     console.log("deletefood =" + deletefood);
@@ -508,7 +545,7 @@ module.exports = function (app, shopData) {
                 if (err) {
                   let response = {
                     status: "error",
-                    message: "server error",
+                    message: " error not found foods",
                   };
                   res.send(response);
                 } else {
@@ -522,24 +559,55 @@ module.exports = function (app, shopData) {
               });
             }
             if (deletefood != undefined && updatefood == undefined) {
-              let sql =
-                "DELETE FROM foods WHERE name = '" + deletefood + "' AND associatedUser = '" + username + "'";
-                db.query(sql,(err,result)=>{
-                  if(err){
+              let sql = "SELECT *FROM foods WHERE name='" + deletefood + "'";
+              db.query(sql, (err, result) => {
+                if (err) {
+                  let response = {
+                    status: "error",
+                    message: " error not found foods",
+                  };
+                  res.send(response);
+                } else {
+                  if (result.length == 0) {
                     let response = {
                       status: "error",
-                      message: "server error",
-                    };
-                    res.send(response);
-                  }else{
-                    let response = {
-                      status: "success",
-                      message: "Food deleted",
+                      message: "Food not found",
                     };
                     res.send(response);
                   }
-                })
-            } 
+
+                if(username == result[0].associateUser){
+
+                  let sql="DELETE FROM foods WHERE name = '" + deletefood + "'";
+                  db.query(sql
+                    , (err, result) => {
+                      if (err) {
+                        let response = {
+                          status: "error",
+                          message: " error not found foods",
+                        };
+                        res.send(response);
+                      } else {
+                        let response = {
+                          status: "success",
+                          message: "Food deleted",
+                        };
+                        res.send(response);
+                      }
+                    }
+                  );
+                
+                }else{
+                  let response = {
+                    status: "error",
+                    message: "You are not authorized to delete this food",
+                  };
+                  res.send(response);
+                }
+
+                }
+              });
+            }
             if (updatefood != undefined && deletefood == undefined) {
               if (foodelement == undefined || elementvalue == undefined) {
                 let response = {
@@ -548,29 +616,39 @@ module.exports = function (app, shopData) {
                 };
                 res.send(response);
               } else {
-                let sql = "UPDATE foods SET " + foodelement + " = '" +
-                elementvalue + "' WHERE name = '" + updatefood + "' AND associatedUser = '" + username + "'";
+                let sql =
+                  "UPDATE foods SET " +
+                  foodelement +
+                  " = '" +
+                  elementvalue +
+                  "' WHERE name = '" +
+                  updatefood +
+                  "' AND associateUser = '" +
+                  username +
+                  "'";
                 db.query(sql, (err, result) => {
-                    if (err) {
-                      let response = {
-                        status: "error",
-                        message: "server error",
-                      };
-                      res.send(response);
-                    } else {
-                      let response = {
-                        status: "success",
-                        message: "Food updated",
-                      };
-                      res.send(response);
-                    }
+                  if (err) {
+                    console.log(err);
+                    let response = {
+                      status: "error",
+                      message: "update error",
+                    };
+                    res.send(response);
+                  } else {
+                    let response = {
+                      status: "success",
+                      message:
+                        "Food updated + " +
+                        foodelement +
+                        " = " +
+                        elementvalue +
+                        "",
+                    };
+                    res.send(response);
                   }
-                );
-                }
-
+                });
+              }
             }
-
-
           }
         }
       });
@@ -581,21 +659,6 @@ module.exports = function (app, shopData) {
       };
       res.send(response);
     }
-  });
-
-  //Custom GET ROUTE - get food by its name
-  //Instructions: from the browser just type in http://doc.gold.ac.uk/usr/666/api/foodName replacing "foodName" with the name of the food item to retrieve it
-  //using curl type: " curl -i www.doc.gold.ac.uk/usr/666/api/foodName " in the terminal (again replacing "foodName" with the desired item name)
-  //e.g. curl -i www.doc.gold.ac.uk/usr/666/api/Banana
-  // CRUD operations of api
-  app.get("/api/:name", function (req, res) {
-    console.log(req.params["name"]);
-    let sql = "SELECT * FROM foods WHERE name = '" + req.params["name"] + "'";
-    db.query(sql, (err, result) => {
-      if (err) throw err;
-      console.log(result);
-      res.send(result);
-    });
   });
 
   /*-------------------------post request--------------------------*/
@@ -643,6 +706,4 @@ module.exports = function (app, shopData) {
       }
     });
   });
-
-
 };
