@@ -86,21 +86,16 @@ routes/main.js 524-578 There is a basic API displayed on '/api' route listing al
 
 routes/main.js 560-660 Additional credit will be given for an API that implements get, post, push and delete.
 
-R11: form validation, routes/main.js 682-731 implemented. this is the function of generating tokens for users. localhost:7777/api?token=IsH8ljEIuMEipWwC&updatefood=Banana&foodelement=Carbs_per&elementvalue=11 . according to the token, you get the token, and you could update or delete the api if your associate users is same as on the table.
+for example  https://www.doc.gold.ac.uk/usr/666/api?token=IsH8ljEIuMEipWwC,
+
+this is the exmple, you put the token at the end of the url , then you got the api. please click the generate tokens, and then paste the token in this way.
+
+According to the token, you get the token, and you could update or delete the api if your associate users is same as on the table. this is an example of the API modification. once we have the token, and we use &upatefood=('food name')&foodelement=Carbs_per&elementvalue=('enter the value here')
+https://www.doc.gold.ac.uk/usr/666/api?token=IsH8ljEIuMEipWwC&updatefood=Banana&foodelement=Carbs_per&elementvalue=11
+
+R11: form validation, routes/main.js 682-731 implemented. this is the function of generating tokens for users.  
 
 334-364 with additional custom validators on lines 8-79 and more validation done with the help of HTML attributes on every form input All form data should have validations, examples include checking password length, email validation, integer data is integer and etc.
 
 R12: MySQL
-
-R10: API
-There is a basic API displayed on '/api' route listing all foods stored in the database in JSON format. i.e. food content can also be accessed as JSON via HTTP method, It should be clear how to access the API (this could include comments in code). Additional credit will be given for an API that implements get, post, push and delete.
-
-for example localhost:7777/api?token=IsH8ljEIuMEipWwC, this is the exmple, you put the token at the end of the url , then you got the api.
-
-R11: form validation
-All form data should have validations, examples include checking password length, email validation, integer data is integer and etc.  I also check, user could not enter same name food id, and you could not enter empty.
-
-R12: Your dynamic web application must be implemented in Node.js on your virtual server. The back-end of the web application could be MongoDB or MySQL. Make sure you have included comments in your code explaining all sections of the code including database interactions.
-
-As you can see above, you need your own model (backend data structure), your own operations on that model, and the ability to access those operations through the web and (to some extent) through an API. Your dynamic web application has a database backend that implements CRUD operations (the database can be MySQL or MongoDB)
 
