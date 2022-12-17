@@ -385,7 +385,7 @@ module.exports = function (app, shopData) {
       });
     }
 
-    //----------------------deletefood session-------------------------------
+    //----------------------deletefood session----------------------------
     if (req.body.submit == "Delete") {
       let sqlquery = "DELETE FROM foods WHERE name = ?";
       let word = [req.body.name];
