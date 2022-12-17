@@ -78,18 +78,29 @@ tabular format in views/list.ejs lines 14-44 R8B: You can gain more marks for yo
 
 views/list.ejs lines 12, 29-47 R9C: going beyond by letting users select some food items (e.g. by displaying a checkbox next to each food item and letting the user input the amount of each food item in the recipe e.g. 2x100 g flour)
 
-calculated values in routes/main.js lines 402-463 and displayed views/recipeInfo.ejs Then collect the name of all selected foods and calculate the sum of the nutritional information (calories, carbs, fat, protein, salt, and sugar) related to all selected food items for a recipe or a meal and display them as ‘nutritional information and calorie count of a recipe or a meal’. Please note, it is not necessary to store recipes or meals in the database.
+calculated values in routes/main.js lines 452-511 and displayed views/recipeInfo.ejs Then collect the name of all selected foods and calculate the sum of the nutritional information (calories, carbs, fat, protein, salt, and sugar) related to all selected food items for a recipe or a meal and display them as ‘nutritional information and calorie count of a recipe or a meal’. Please note, it is not necessary to store recipes or meals in the database.
 
-R10: API - routes/main.js 468-584
+R10: API - routes/main.js 524-680
 
-routes/main.js 473-487 There is a basic API displayed on '/api' route listing all foods stored in the database in JSON format. i.e. food content can also be accessed as JSON via HTTP method, It should be clear how to access the API (this could include comments in code).
+routes/main.js 524-578 There is a basic API displayed on '/api' route listing all foods stored in the database in JSON format. i.e. food content can also be accessed as JSON via HTTP method, It should be clear how to access the API (this could include comments in code).
 
-routes/main.js 507-514 Additional credit will be given for an API that implements get, post, push and delete.
+routes/main.js 560-660 Additional credit will be given for an API that implements get, post, push and delete.
 
-R11: form validation
+R11: form validation, routes/main.js 682-731 implemented. this is the function of generating tokens for users. localhost:7777/api?token=IsH8ljEIuMEipWwC&updatefood=Banana&foodelement=Carbs_per&elementvalue=11 . according to the token, you get the token, and you could update or delete the api if your associate users is same as on the table.
 
-implemented in routes/main.js lines 44, 71-87, 167-170, 273-293,
 334-364 with additional custom validators on lines 8-79 and more validation done with the help of HTML attributes on every form input All form data should have validations, examples include checking password length, email validation, integer data is integer and etc.
 
 R12: MySQL
+
+R10: API
+There is a basic API displayed on '/api' route listing all foods stored in the database in JSON format. i.e. food content can also be accessed as JSON via HTTP method, It should be clear how to access the API (this could include comments in code). Additional credit will be given for an API that implements get, post, push and delete.
+
+for example localhost:7777/api?token=IsH8ljEIuMEipWwC, this is the exmple, you put the token at the end of the url , then you got the api.
+
+R11: form validation
+All form data should have validations, examples include checking password length, email validation, integer data is integer and etc.  I also check, user could not enter same name food id, and you could not enter empty.
+
+R12: Your dynamic web application must be implemented in Node.js on your virtual server. The back-end of the web application could be MongoDB or MySQL. Make sure you have included comments in your code explaining all sections of the code including database interactions.
+
+As you can see above, you need your own model (backend data structure), your own operations on that model, and the ability to access those operations through the web and (to some extent) through an API. Your dynamic web application has a database backend that implements CRUD operations (the database can be MySQL or MongoDB)
 
