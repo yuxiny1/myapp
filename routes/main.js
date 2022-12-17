@@ -360,7 +360,7 @@ module.exports = function (app, shopData) {
 
     let user = req.session.userId;
     let associatedUser = updatefood_data[0].associateUser;
-  
+
     let sqlquery =
       "UPDATE foods SET name = ?, Typical_values_per = ?, Unit_of_the_typical_value = ?, Carbs_per = ?, Unit_of_the_carbs = ?, Fat_per = ?, Unit_of_the_fat = ?, Protein_per = ?, Unit_of_the_protein = ?, associateUser = ? WHERE name = ?";
     // query database to get all the foods
@@ -427,13 +427,12 @@ module.exports = function (app, shopData) {
         });
       }
 
-      if(req.body.submit == "DeleteAll"){
+      if (req.body.submit == "DeleteAll") {
         let word = [req.session.userId];
         let sqlquery = "DELETE FROM foods WHERE associateUser = ?";
         console.log(word);
         console.log(sqlquery);
-        db.query(sqlquery, word
-          , (err, result) => {
+        db.query(sqlquery, word, (err, result) => {
           if (err) {
             res.send("No such food");
           } else {
@@ -441,7 +440,6 @@ module.exports = function (app, shopData) {
           }
         });
       }
-
     } else {
       res.send("You are not allowed to update this food");
     }
@@ -589,11 +587,10 @@ module.exports = function (app, shopData) {
                     res.send(response);
                   }
 
-                if(username == result[0].associateUser){
-
-                  let sql="DELETE FROM foods WHERE name = '" + deletefood + "'";
-                  db.query(sql
-                    , (err, result) => {
+                  if (username == result[0].associateUser) {
+                    let sql =
+                      "DELETE FROM foods WHERE name = '" + deletefood + "'";
+                    db.query(sql, (err, result) => {
                       if (err) {
                         let response = {
                           status: "error",
@@ -607,17 +604,14 @@ module.exports = function (app, shopData) {
                         };
                         res.send(response);
                       }
-                    }
-                  );
-                
-                }else{
-                  let response = {
-                    status: "error",
-                    message: "You are not authorized to delete this food",
-                  };
-                  res.send(response);
-                }
-
+                    });
+                  } else {
+                    let response = {
+                      status: "error",
+                      message: "You are not authorized to delete this food",
+                    };
+                    res.send(response);
+                  }
                 }
               });
             }
