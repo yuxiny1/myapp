@@ -243,7 +243,7 @@ module.exports = function (app, shopData) {
     });
   });
   //---------------------------list page---------------------------
-  app.get("/list", redirectLogin,function (req, res) {
+  app.get("/list", redirectLogin, function (req, res) {
     let sqlquery = "SELECT * FROM foods"; // query database to get all the foods
     // execute sql query
     db.query(sqlquery, (err, result) => {
@@ -314,7 +314,7 @@ module.exports = function (app, shopData) {
   });
 
   //----------------------updatefood session-------------------------------
-  app.get("/updatefood", redirectLogin,function (req, res) {
+  app.get("/updatefood", redirectLogin, function (req, res) {
     res.render("updatefood.html");
   });
 
@@ -471,21 +471,117 @@ module.exports = function (app, shopData) {
   /*http://localhost:7000/api?keyword=apple this is an example of how to use the api, and you could use those api on the website to search for the food you want to add to the list
    */
   app.get("/api", (req, res) => {
-    let sqlquery = "SELECT * FROM foods";
-    // execute sql query
-    let keyword = req.query.keyword;
-    // if keyword is not empty, add the keyword to the sql query
-    if (keyword) {
-      sqlquery += " WHERE name LIKE '%" + keyword + "%'";
-    }
-    db.query(sqlquery, (err, result) => {
-      if (err) {
-        res.redirect("./");
-      }
-      res.json(result);
-    });
-  });
+    // req.query.token get variables from html
+    let token = req.sanitize(req.query.token);
+    let updatefood = req.sanitize(req.query.updatefood);
+    let deletefood = req.sanitize(req.query.deletefood);
+    let foodelement = req.sanitize(req.query.foodelement);
+    let elementvalue = req.sanitize(req.query.elementvalue);
+    console.log("element value = "+ elementvalue);
+    console.log("food element = "+ foodelement);
+    console.log("token =" + token);
+    console.log("updatefood =" + updatefood);
+    console.log("deletefood =" + deletefood);
+    // if the token is not undefined, then check if the token is valid
+    if (token != undefined) {
+      let sql = "SELECT * FROM users WHERE apiToken = '" + token + "'";
+      db.query(sql, (err, result) => {
+        if (err) {
+          let response = {
+            status: "error",
+            message: "Invalid token",
+          };
+          res.send(response);
+        } else {
+          if (result.length == 0) {
+            let response = {
+              status: "error",
+              message: "Invalid token",
+            };
+            res.send(response);
+          } else {
+            let username = result[0].userName;
+            console.log(username);
+            if (updatefood == undefined && deletefood == undefined) {
+              let sql = "SELECT * FROM foods";
+              db.query(sql, (err, result) => {
+                if (err) {
+                  let response = {
+                    status: "error",
+                    message: "server error",
+                  };
+                  res.send(response);
+                } else {
+                  let response = {
+                    status: "success",
+                    message: "Foods retrieved",
+                    data: result,
+                  };
+                  res.send(response);
+                }
+              });
+            }
+            if (deletefood != undefined && updatefood == undefined) {
+              let sql =
+                "DELETE FROM foods WHERE name = '" + deletefood + "' AND associatedUser = '" + username + "'";
+                db.query(sql,(err,result)=>{
+                  if(err){
+                    let response = {
+                      status: "error",
+                      message: "server error",
+                    };
+                    res.send(response);
+                  }else{
+                    let response = {
+                      status: "success",
+                      message: "Food deleted",
+                    };
+                    res.send(response);
+                  }
+                })
+            } 
+            if (updatefood != undefined && deletefood == undefined) {
+              if (foodelement == undefined || elementvalue == undefined) {
+                let response = {
+                  status: "error",
+                  message: "api error",
+                };
+                res.send(response);
+              } else {
+                let sql = "UPDATE foods SET " + foodelement + " = '" +
+                elementvalue + "' WHERE name = '" + updatefood + "' AND associatedUser = '" + username + "'";
+                db.query(sql, (err, result) => {
+                    if (err) {
+                      let response = {
+                        status: "error",
+                        message: "server error",
+                      };
+                      res.send(response);
+                    } else {
+                      let response = {
+                        status: "success",
+                        message: "Food updated",
+                      };
+                      res.send(response);
+                    }
+                  }
+                );
+                }
 
+            }
+
+
+          }
+        }
+      });
+    } else {
+      let response = {
+        status: "error",
+        message: "Invalid token",
+      };
+      res.send(response);
+    }
+  });
 
   //Custom GET ROUTE - get food by its name
   //Instructions: from the browser just type in http://doc.gold.ac.uk/usr/666/api/foodName replacing "foodName" with the name of the food item to retrieve it
@@ -503,45 +599,50 @@ module.exports = function (app, shopData) {
   });
 
   /*-------------------------post request--------------------------*/
-  
-//POST ROUTE - insert a food
-//Instructions: in the terminal type the following, replacing the "body" with the key-value pairs for the properties of the document (food item) you wish to insert
-//curl -i -X POST -d '{body}' -H 'Content-Type: application/json' www.doc.gold.ac.uk/usr/666/api
-//e.g. for banana: curl -i -X POST -d '{ "name":"Banana", "valueAmount":"100", "unit":"grams", "calories":"88", "carbs":"23", "sugars":"12", "fat":"0.3", "protein":"1.1", "salt":"1", "creator": "yourUsername"}' -H 'Content-Type: application/json' www.doc.gold.ac.uk/usr/666/api
 
-  app.post("/api/:name/:typicalvalue/:carbs/:fat/:protein", function (req, res) {
-    let sql =
-      "INSERT INTO foods (name, Typical_value_per, Carbs_per, Fat_per, Protein_per) VALUES ('" +
-      req.params["name"] +
-      "', " +
-      req.params["typicalvalue"] +
-      ", " +
-      req.params["carbs"] +
-      ", " +
-      req.params["fat"] +
-      ", " +
-      req.params["protein"] +
-      ")";
-    db.query
-    (sql, (err,result) => {
-      if (err) throw err;
-      console.log(result);
-      res.send(result);
-    });
-  });
+  //POST ROUTE - insert a food
+  //Instructions: in the terminal type the following, replacing the "body" with the key-value pairs for the properties of the document (food item) you wish to insert
+  //curl -i -X POST -d '{body}' -H 'Content-Type: application/json' www.doc.gold.ac.uk/usr/666/api
+  //e.g. for banana: curl -i -X POST -d '{ "name":"Banana", "valueAmount":"100", "unit":"grams", "calories":"88", "carbs":"23", "sugars":"12", "fat":"0.3", "protein":"1.1", "salt":"1", "creator": "yourUsername"}' -H 'Content-Type: application/json' www.doc.gold.ac.uk/usr/666/api
 
   //Custom DELETE ROUTE - delete food from the database
   //Instructions: from the browser just type in http://doc.gold.ac.uk/usr/666/api/foodName replacing "foodName" with the name of the food item to delete it
-  //e.g. http://doc.gold.ac.uk/usr/666/api/Banana
 
-  // app.delete("/api/:name", function (req, res) {
-  //   let sql = "DELETE FROM foods WHERE name = '" + req.params["name"] + "'";
-  //   db.query(sql, (err, result) => {
-  //     if (err) throw err;
-  //     console.log(result);
-  //     res.send(result);
-  //   });
-  // });
+  //---------------------------generate tokens --------------------
+  app.get("/apiGenerator", redirectLogin, function (req, res) {
+    res.render("apiGenerator.ejs", shopData);
+  });
 
-  // ----------------------end of api session------------------------
+  app.post("/createAPI_tokens", redirectLogin, function (req, res) {
+    let associatedUsername = req.session.userId;
+    function generateToken() {
+      let token = "";
+      let possible =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for (let i = 0; i < 16; i++) {
+        token += possible.charAt(Math.floor(Math.random() * possible.length));
+      }
+      return token;
+    }
+    let token = generateToken();
+    console.log(associatedUsername);
+    console.log(token);
+    let sql =
+      "UPDATE users SET apiToken = '" +
+      token +
+      "' WHERE userName = '" +
+      associatedUsername +
+      "'";
+    // execute sql query
+    db.query(sql, (err, result) => {
+      if (err) {
+        console.log(err);
+        res.redirect("./");
+      } else {
+        res.send("Your API token is: " + token);
+      }
+    });
+  });
+
+
 };
